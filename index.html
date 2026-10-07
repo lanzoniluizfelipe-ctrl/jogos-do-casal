@@ -5,33 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#18040f">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Jogos do Casal 4.2 • +18</title>
 <style>
-body{margin:0;background:#0d020a;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100dvh}
-.box{text-align:center;padding:24px}
-.spin{width:36px;height:36px;border:3px solid rgba(255,61,122,.25);border-top-color:#ff4d8a;border-radius:50%;animation:s .8s linear infinite;margin:0 auto 14px}
+body{margin:0;background:#0d020a;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100dvh}
+.box{text-align:center;padding:28px;max-width:320px}
+.spin{width:40px;height:40px;border:3px solid rgba(255,61,122,.2);border-top-color:#ff4d8a;border-radius:50%;animation:s .75s linear infinite;margin:0 auto 16px}
 @keyframes s{to{transform:rotate(360deg)}}
+h1{font-size:1.15rem;margin:0 0 6px}
+p{color:#b99aaa;font-size:.8rem;margin:0;line-height:1.4}
 </style>
 </head>
 <body>
-<div class="box"><div class="spin"></div><div id="msg">Carregando Jogos do Casal…</div></div>
+<div class="box">
+  <div class="spin"></div>
+  <h1>Jogos do Casal</h1>
+  <p id="msg">Carregando…</p>
+</div>
 <script>
-(async()=>{
-  const n = 3;
-  const parts = [];
+(async function(){
+  var n=8, parts=[], msg=document.getElementById('msg');
   try {
-    for (let i = 0; i < n; i++) {
-      const r = await fetch('./part' + i + '.txt');
-      if (!r.ok) throw new Error('Falha ao carregar parte ' + i);
+    for (var i=0; i<n; i++) {
+      var r = await fetch('./chunk'+i+'.txt');
+      if (!r.ok) throw new Error('parte '+i+' ('+r.status+')');
       parts.push(await r.text());
-      document.getElementById('msg').textContent = 'Carregando… ' + Math.round((i+1)/n*100) + '%';
+      msg.textContent = 'Carregando… ' + Math.round((i+1)/n*100) + '%';
     }
-    const html = parts.join('');
+    var html = parts.join('');
     document.open();
     document.write(html);
     document.close();
   } catch (e) {
-    document.getElementById('msg').textContent = 'Erro: ' + e.message + '. Atualize a página.';
+    msg.textContent = 'Erro: ' + e.message + '. Atualize a página.';
   }
 })();
 </script>
