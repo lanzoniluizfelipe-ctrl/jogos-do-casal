@@ -23,10 +23,10 @@ p{color:#b99aaa;font-size:.8rem;margin:0;line-height:1.4}
 </div>
 <script>
 (async function(){
-  var msg=document.getElementById('msg'), n=10, parts=[];
+  var msg=document.getElementById('msg'), n=20, parts=[];
   try{
     for(var i=0;i<n;i++){
-      var r=await fetch('./d'+i+'.txt');
+      var r=await fetch('./c'+i+'.txt');
       if(!r.ok) throw new Error('arquivo '+i);
       parts.push(await r.text());
       msg.textContent='Baixando… '+Math.round((i+1)/n*100)+'%';
