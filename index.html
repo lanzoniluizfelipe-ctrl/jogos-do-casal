@@ -23,10 +23,10 @@ p{color:#b99aaa;font-size:.8rem;margin:0;line-height:1.4}
 </div>
 <script>
 (async function(){
-  var msg=document.getElementById('msg'), n=3, parts=[];
+  var msg=document.getElementById('msg'), n=6, parts=[];
   try{
     for(var i=0;i<n;i++){
-      var r=await fetch('./b64_'+i+'.txt');
+      var r=await fetch('./d'+i+'.txt');
       if(!r.ok) throw new Error('arquivo '+i);
       parts.push(await r.text());
       msg.textContent='Baixando… '+Math.round((i+1)/n*100)+'%';
@@ -38,7 +38,7 @@ p{color:#b99aaa;font-size:.8rem;margin:0;line-height:1.4}
     var html=await new Response(stream).text();
     document.open();document.write(html);document.close();
   }catch(e){
-    msg.textContent='Erro: '+e.message+'. Atualize a página ou use Chrome/Safari.';
+    msg.textContent='Erro: '+e.message+'. Use Chrome ou Safari atualizado.';
     console.error(e);
   }
 })();
