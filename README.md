@@ -1,4 +1,4 @@
-# Jogos do Casal 4.2.1
+# Amor com Putaria
 
 App de jogos íntimos para casais (+18).
 
