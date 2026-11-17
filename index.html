@@ -1,29 +1,15 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
+<html lang="pt-BR">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0d0210">
-<link rel="manifest" href="./manifest.webmanifest">
+<meta http-equiv="refresh" content="0;url=./Jogos-do-Casal-4.2%20(1).html">
 <title>Amor com Putaria</title>
-<style>body{margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh;text-align:center;padding:16px}</style>
-</head><body>
-<p id="m">Carregando Amor com Putaria…</p>
-<script>
-(async()=>{
-try{
-  const n=5;
-  let html='';
-  for(let i=0;i<n;i++){
-    const r=await fetch('./s'+i+'.txt?v=3');
-    if(!r.ok) throw new Error('s'+i+' '+r.status);
-    html+=await r.text();
-  }
-  document.open();document.write(html);document.close();
-}catch(e){
-  console.error(e);
-  document.getElementById('m').innerHTML='Erro: '+e.message+'<br><a style="color:#ff6b9d" href="./Jogos-do-Casal-4.2%20(1).html">Versão anterior</a>';
-}
-})();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script>
-</body></html>
+<style>body{margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh;text-align:center;padding:20px}</style>
+</head>
+<body>
+<p>Carregando…</p>
+<p><a style="color:#ff6b9d" href="./Jogos-do-Casal-4.2%20(1).html">Abrir jogo</a></p>
+<script>location.replace('./Jogos-do-Casal-4.2%20(1).html');</script>
+</body>
+</html>
