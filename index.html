@@ -1,29 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
+<html lang="pt-BR">
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#0d0210">
-<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Amor com Putaria</title>
-<style>body{margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh;text-align:center;padding:16px}</style>
-</head><body>
-<p id="m">Carregando Amor com Putaria…</p>
-<script>
-(async()=>{
-try{
-  const r=await fetch('./game.b64?v=2');
-  if(!r.ok) throw new Error('game.b64 '+r.status);
-  const b64=await r.text();
-  const bin=Uint8Array.from(atob(b64.trim()),c=>c.charCodeAt(0));
-  const ds=new DecompressionStream('gzip');
-  const stream=new Blob([bin]).stream().pipeThrough(ds);
-  const html=await new Response(stream).text();
-  document.open();document.write(html);document.close();
-}catch(e){
-  console.error(e);
-  document.getElementById('m').innerHTML='Erro: '+e.message+'<br><a style="color:#ff6b9d" href="./Jogos-do-Casal-4.2%20(1).html">Versão anterior</a>';
-}
-})();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script>
-</body></html>
