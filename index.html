@@ -3,33 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0d0210">
-<link rel="manifest" href="./manifest.webmanifest">
+<meta http-equiv="refresh" content="0; url=./Jogos-do-Casal-4.2%20(1).html">
 <title>Amor com Putaria</title>
-<style>body{margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh}</style>
+<link rel="manifest" href="./manifest.webmanifest">
+<style>body{margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh;padding:20px;text-align:center}</style>
 </head>
 <body>
-<p id="m">Carregando Amor com Putaria…</p>
-<script>
-(async()=>{
-  try{
-    const n = 5;
-    const parts = [];
-    for(let i=0;i<n;i++){
-      const r = await fetch('./p'+i+'.txt');
-      parts.push(await r.text());
-    }
-    document.open();
-    document.write(parts.join(''));
-    document.close();
-  }catch(e){
-    document.getElementById('m').textContent = 'Erro ao carregar. Atualize a página.';
-    console.error(e);
-  }
-})();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-</script>
+<p>Carregando o jogo…</p>
+<p><a href="./Jogos-do-Casal-4.2%20(1).html" style="color:#ff6b9d">Toque aqui se não abrir</a></p>
+<script>location.replace('./Jogos-do-Casal-4.2%20(1).html');</script>
 </body>
 </html>
