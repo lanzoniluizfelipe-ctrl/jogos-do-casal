@@ -112,7 +112,7 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
 </header>
 
 <div class="main">
-<section class="view" id="v-home">
+<section class="view on" id="v-home">
   <div class="hero">
     <div class="ey">BANCO ORGANIZADO · DIREÇÃO CORRETA</div>
     <h1>Ele faz nela.<br>Ela faz nele.</h1>
@@ -217,7 +217,7 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
   <div class="list" id="libList"></div>
 </section>
 
-<section class="view on" id="v-cfg">
+<section class="view" id="v-cfg">
   <button class="btn ghost sm" id="backC">← Voltar</button>
   <div class="h">Ajustes &amp; instalação</div>
   <div class="panel">
@@ -286,10 +286,10 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
 </div>
 
 <nav class="bnav">
-  <button class="" data-v="home"><span>⌂</span>Início</button>
+  <button class="on" data-v="home"><span>⌂</span>Início</button>
   <button data-v="people"><span>♙</span>Casal</button>
   <button data-v="lib"><span>▦</span>Banco</button>
-  <button data-v="cfg" class="on"><span>⚙</span>Ajustes</button>
+  <button data-v="cfg"><span>⚙</span>Ajustes</button>
 </nav>
 <div class="toast" id="toast">Siga os passos na tela</div>
 
@@ -409,6 +409,13 @@ function load(){
   };
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} try{ if(localStorage.getItem('amor_age_ok')==='1') $('age').classList.add('hide'); }catch(e){}
+
+// limpa service worker e cache antigos do GitHub Pages
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
+}
+if(window.caches){ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
+
 renderHome();}
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._);toast._=setTimeout(()=>t.classList.remove('on'),2400);}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -944,7 +951,7 @@ function renderCfg(){
   window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; });
 })();
 
-$('ageYes').onclick=()=>{ $('age').classList.add('hide'); try{localStorage.setItem('amor_age_ok','1')}catch(e){} };
+$('ageYes').onclick=()=>{ $('age').classList.add('hide'); try{localStorage.setItem('amor_age_ok','1')}catch(e){} show('home'); };
 $('ageNo').onclick=()=>{document.body.innerHTML='<div style="display:grid;place-items:center;height:100dvh;background:#0d0210;color:#c9a0b8">Só +18</div>';};
 $('savePeople').onclick=()=>{S.players=[$('nH').value.trim()||'Ele',$('nM').value.trim()||'Ela'];save();toast('Preferências salvas');};
 $('draw').onclick=draw; $('done').onclick=done; $('skip').onclick=skip;
