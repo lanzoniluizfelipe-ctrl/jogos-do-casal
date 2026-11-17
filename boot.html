@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0210">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Amor com Putaria</title>
+<style>body{margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh;padding:16px;text-align:center}</style>
+</head>
+<body>
+<p id="m">Carregando Amor com Putaria…</p>
+<script>
+(async()=>{
+  try{
+    const n=8;
+    let b64='';
+    for(let i=0;i<n;i++){
+      const r=await fetch('./b64n_'+i+'.txt');
+      if(!r.ok) throw new Error('faltou b64n_'+i);
+      b64+=await r.text();
+    }
+    const bin=atob(b64);
+    const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const html=new TextDecoder('utf-8').decode(bytes);
+    document.open(); document.write(html); document.close();
+  }catch(e){
+    document.getElementById('m').innerHTML='Erro ao carregar.<br><a style="color:#ff6b9d" href="./Jogos-do-Casal-4.2%20(1).html">Abrir versão anterior</a>';
+    console.error(e);
+  }
+})();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
