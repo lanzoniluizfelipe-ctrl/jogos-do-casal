@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="0; url=./index.html">
+<title>Amor com Putaria</title>
+<script>
+// mata service worker e cache antigos
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
+}
+if(window.caches){ caches.keys().then(ks=>ks.forEach(k=>caches.delete(k))); }
+location.replace('./index.html');
+</script>
+</head>
+<body style="margin:0;background:#0d0210;color:#ff6b9d;font-family:system-ui;display:grid;place-items:center;min-height:100dvh">
+<p>Abrindo o jogo…</p>
+<p><a style="color:#ff6b9d" href="./index.html">Toque aqui se não abrir</a></p>
+</body>
+</html>
