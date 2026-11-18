@@ -234,7 +234,8 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
     <button class="btn ghost" id="btnImport" style="margin-left:6px">⬆ Importar JSON</button>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
     <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
-    <button class="btn ghost danger" id="btnReset">Restaurar app (apaga local)</button>
+    <button class="btn ghost" id="btnResetProgress" style="width:100%;margin-bottom:8px">↺ Zerar só progresso (pontos, rodadas, nível)</button>
+    <button class="btn ghost danger" id="btnReset">Restaurar app (apaga tudo: cartas, preferências e progresso)</button>
   </div>
 </section>
 </div>
@@ -251,6 +252,7 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
         <option value="fotos">Fotos &amp; Vídeos</option>
         <option value="desejos">Desejos</option>
         <option value="damas">Prendas damas</option>
+        <option value="roles">Roleplay</option>
       </select>
     </div>
     <div class="field"><label>Grupo</label><input id="edGrupo" placeholder="Oral, Anal, Orgasmo..."></div>
@@ -264,6 +266,7 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
         <option value="video">video</option>
         <option value="desejo">desejo</option>
         <option value="prenda">prenda</option>
+        <option value="par">par (roleplay)</option>
       </select>
     </div>
     <div class="field"><label>Para quem</label>
@@ -276,7 +279,13 @@ button{font:inherit;cursor:pointer;border:none;color:inherit}
     <div class="field"><label>Nível</label>
       <select id="edLv"><option value="leve">leve</option><option value="medio">medio</option><option value="intenso">intenso</option><option value="extremo">extremo</option></select>
     </div>
-    <div class="field"><label>Texto</label><textarea id="edText"></textarea></div>
+    <div class="field" id="edTextWrap"><label>Texto</label><textarea id="edText"></textarea></div>
+    <div id="edRoleWrap" style="display:none">
+      <div class="field"><label>Papel A (nome)</label><input id="edAName" placeholder="Ex: O tímido"></div>
+      <div class="field"><label>Papel A (descrição)</label><textarea id="edABio" placeholder="Como ele age..."></textarea></div>
+      <div class="field"><label>Papel B (nome)</label><input id="edBName" placeholder="Ex: A guiadora"></div>
+      <div class="field"><label>Papel B (descrição)</label><textarea id="edBBio" placeholder="Como ela age..."></textarea></div>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn main" id="edSave">Salvar</button>
       <button class="btn ghost" id="edCancel">Cancelar</button>
@@ -838,43 +847,90 @@ function renderLib(){
   });
 }
 
-function openEditor(id, gameId){
+function syncEditorMode(){
+  const g=$('edGame').value;
+  const isRole = (g==='roles' || g==='roleplay');
+  if($('edRoleWrap')) $('edRoleWrap').style.display = isRole ? 'block' : 'none';
+  if($('edTextWrap')) $('edTextWrap').style.display = isRole ? 'none' : 'block';
+  if(isRole){
+    if(!$('edTipo').value || $('edTipo').value==='desafio') $('edTipo').value='par';
+    if(!$('edGrupo').value || $('edGrupo').value==='Oral') $('edGrupo').value='Papéis';
+    if(!$('edPara').value) $('edPara').value='ambos';
+  }
+}
+function openEditor(id, gameId, preset){
   editId=id;
+  preset = preset || {};
   const it=id?listFor(gameId).find(x=>x.id===id):null;
   if(!it){
     $('edTitle').textContent='Nova carta';
-    $('edGame').value=gameId||'vd';
-    $('edGrupo').value='Oral'; $('edTipo').value='desafio'; $('edPara').value='homem';
-    $('edLv').value='intenso'; $('edText').value='';
+    const g = gameId||'vd';
+    $('edGame').value = (g==='roleplay'?'roles':g);
+    $('edGrupo').value = preset.grupo || (g==='roles'||g==='roleplay'?'Papéis':'Oral');
+    $('edTipo').value = preset.tipo || (g==='roles'||g==='roleplay'?'par':'desafio');
+    $('edPara').value = preset.para || (g==='roles'||g==='roleplay'?'ambos':'homem');
+    $('edLv').value = preset.level || 'intenso';
+    $('edText').value = '';
+    if($('edAName')){ $('edAName').value=''; $('edABio').value=''; $('edBName').value=''; $('edBBio').value=''; }
     $('edDel').style.display='none';
   } else {
     $('edTitle').textContent='Editar carta';
-    $('edGame').value=it.game||gameId;
+    const g = it.game==='roleplay' ? 'roles' : (it.game||gameId);
+    $('edGame').value=g;
     $('edGrupo').value=it.grupo||'';
     $('edTipo').value=it.tipo||'desafio';
     $('edPara').value=it.para||'ambos';
     $('edLv').value=it.level||'leve';
     $('edText').value=it.text||'';
+    if($('edAName')){
+      $('edAName').value=it.a_name||'';
+      $('edABio').value=it.a_bio||'';
+      $('edBName').value=it.b_name||'';
+      $('edBBio').value=it.b_bio||'';
+    }
     $('edDel').style.display='inline-block';
   }
+  syncEditorMode();
   $('editor').classList.remove('hide');
 }
 function closeEditor(){ $('editor').classList.add('hide'); editId=null; }
 
 function saveEditor(){
-  const gameId=$('edGame').value;
-  const data={
-    game:gameId,
-    grupo:$('edGrupo').value.trim()||'Safadeza',
-    tipo:$('edTipo').value,
-    para:$('edPara').value,
-    level:$('edLv').value,
-    text:$('edText').value.trim(),
-    active:true,
-    points:10
-  };
-  if(!data.text){toast('Texto obrigatório');return;}
+  let gameId=$('edGame').value;
+  if(gameId==='roleplay') gameId='roles';
+  const isRole = (gameId==='roles');
   let list=listFor(gameId);
+  let data;
+  if(isRole){
+    const a_name=($('edAName')&&$('edAName').value.trim())||'';
+    const a_bio=($('edABio')&&$('edABio').value.trim())||'';
+    const b_name=($('edBName')&&$('edBName').value.trim())||'';
+    const b_bio=($('edBBio')&&$('edBBio').value.trim())||'';
+    if(!a_name || !b_name){ toast('Preencha os nomes dos dois papéis'); return; }
+    data={
+      game:'roleplay',
+      grupo:$('edGrupo').value.trim()||'Papéis',
+      tipo:'par',
+      para:$('edPara').value||'ambos',
+      level:$('edLv').value,
+      a_name, a_bio, b_name, b_bio,
+      text: a_name+' / '+b_name,
+      active:true,
+      points:10
+    };
+  } else {
+    data={
+      game:gameId,
+      grupo:$('edGrupo').value.trim()||'Safadeza',
+      tipo:$('edTipo').value,
+      para:$('edPara').value,
+      level:$('edLv').value,
+      text:$('edText').value.trim(),
+      active:true,
+      points:10
+    };
+    if(!data.text){toast('Texto obrigatório');return;}
+  }
   if(editId){
     const it=list.find(x=>x.id===editId);
     if(it) Object.assign(it, data);
@@ -960,7 +1016,17 @@ $('goPeople').onclick=()=>show('people'); $('goLib').onclick=()=>show('lib'); $(
 $('pLv').onchange=()=>{S.level=$('pLv').value; if(S.level==='mixer') S.mixerStep=0; save(); extraUI();};
 ['fGame','fGrupo','fTipo','fPara','fLv'].forEach(id=>$(id).onchange=renderLib);
 $('fQ').oninput=renderLib;
-$('btnNew').onclick=()=>openEditor(null, $('fGame').value);
+$('btnNew').onclick=()=>{
+  const gameId=$('fGame').value;
+  const preset={};
+  const fg=$('fGrupo').value, ft=$('fTipo').value, fp=$('fPara').value, fl=$('fLv').value;
+  if(fg && fg!=='all') preset.grupo=fg;
+  if(ft && ft!=='all') preset.tipo=ft;
+  if(fp && fp!=='all') preset.para=fp;
+  if(fl && fl!=='all') preset.level=fl;
+  openEditor(null, gameId, preset);
+};
+if($('edGame')) $('edGame').onchange=syncEditorMode;
 $('edSave').onclick=saveEditor; $('edCancel').onclick=closeEditor; $('edDel').onclick=delEditor;
 document.querySelectorAll('.bnav [data-v]').forEach(b=>b.onclick=()=>show(b.dataset.v));
 $('btnInstall').onclick=async()=>{
@@ -1026,7 +1092,16 @@ $('importFile').onchange=e=>{
   r.onload=()=>{ try{ const data=JSON.parse(r.result); S={...load(),...data}; save(); toast('Importado'); }catch(err){ toast('JSON inválido'); } };
   r.readAsText(f); e.target.value='';
 };
-$('btnReset').onclick=()=>{ if(confirm('Apagar dados locais?')){ localStorage.removeItem(KEY); location.reload(); } };
+$('btnResetProgress').onclick=()=>{
+  if(!confirm('Zerar só o progresso? (pontos, rodadas, sequência e nível do Mixer)\nCartas e preferências ficam.')) return;
+  S.score={points:0,rounds:0,skipped:0,streak:0,captures:0};
+  S.mixerStep=0;
+  S.damasCaptures=0;
+  S.history=[];
+  if(S.level==='mixer') S.mixerStep=0;
+  save(); renderHome(); toast('Progresso zerado');
+};
+$('btnReset').onclick=()=>{ if(confirm('Apagar TUDO (cartas, preferências e progresso)?')){ localStorage.removeItem(KEY); location.reload(); } };
 
 renderHome();
 </script>
